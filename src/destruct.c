@@ -26,12 +26,13 @@ int has_component(entity ent, buffer component, unsigned int* idx)
     return 0;
 }
 
-void add_component(entity ent, buffer component)
+int add_component(entity ent, buffer component)
 {
     if (has_component(ent,component,NULL))
-        return;
+        return -1;
     resize_buffer(component,get_buffer_length(component)+1);
     set_buffer_fieldui(component,get_buffer_length(component)-1,0,ent);
+    return get_buffer_length(component)-1;
 }
 
 void remove_component(entity ent, buffer component)
@@ -60,7 +61,7 @@ entity create_entity(unsigned int** entities)
         puts("More than 2^32 entities! Internal buffer overflown!");
         exit(EXIT_FAILURE);
     }
-    (*entities) = realloc((*entities),(*entities)[0]);
+    (*entities) = realloc((*entities),(*entities)[0] * sizeof(entity));
 
     offset = 0;
 
