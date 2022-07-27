@@ -1,12 +1,12 @@
 out: destruct
 gxx: clang
 gxxflags:
-cxxflags: -W -Wall -Wextra -O0
+cxxflags: -W -Wall -Wextra -O0 -std=c89
 source: ../src/destruct.c
 includes: -I../libs/include
 lib_path: -L../libs/lib
-libraries: -lconstruct
+libraries: -lDBG -lconstruct
 debugger: none
-dependencies: construct
-d_types: static
-defines:
+dependencies: DBG construct
+d_types: static static
+defines: -DEBUG

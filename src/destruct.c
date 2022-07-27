@@ -1,6 +1,10 @@
 
 #include "destruct.h"
 
+#ifdef EBUG
+#include <DBG/debug.h>
+#endif
+
 unsigned int pseudo_random_premutation(unsigned int x)
 {
     const unsigned int prime = 4294967291;
@@ -10,13 +14,13 @@ unsigned int pseudo_random_premutation(unsigned int x)
     return (x <= prime / 2) ? residue : prime - residue;
 }
 
-int has_component(entity ent, buffer component, unsigned int* idx)
+int has_component(entity target, buffer component, unsigned int* idx)
 {
     unsigned int i, size = get_buffer_length(component);
 
     for (i = 0; i < size; i++)
     {
-        if (*get_buffer_pointerui(component,i,0) == ent)
+        if (*get_buffer_pointerui(component,i,0) == target)
         {
             if (idx != NULL)
                 *idx = i;
@@ -26,23 +30,24 @@ int has_component(entity ent, buffer component, unsigned int* idx)
     return 0;
 }
 
-int add_component(entity ent, buffer component)
+int add_component(entity target, buffer component)
 {
-    if (has_component(ent,component,NULL))
-        return -1;
+    if (has_component(target,component,NULL))
+        return 0;
     resize_buffer(component,get_buffer_length(component)+1);
-    set_buffer_fieldui(component,get_buffer_length(component)-1,0,ent);
-    return get_buffer_length(component)-1;
+    set_buffer_fieldui(component,get_buffer_length(component)-1,0,target);
+    return 1;
 }
 
-void remove_component(entity ent, buffer component)
+int remove_component(entity target, buffer component)
 {
     unsigned int index;
 
-    if (!has_component(ent,component,&index))
-        return;
+    if (!has_component(target,component,&index))
+        return 0;
 
     remove_buffer_at(component,index);
+    return 1;
 }
 
 entity create_entity(unsigned int** entities)
@@ -83,13 +88,13 @@ entity create_entity(unsigned int** entities)
     return (*entities)[(*entities)[0]] = num;
 }
 
-void destroy_entity(entity ent, unsigned int** entities)
+void destroy_entity(entity target, unsigned int** entities)
 {
     unsigned int i, found = 0;
 
     for (i = 1; i < (*entities)[0] +1; i++)
     {
-        found = (*entities)[i] == ent;
+        found = (*entities)[i] == target;
         if (found)
             break;
     }
