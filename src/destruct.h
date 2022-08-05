@@ -12,6 +12,7 @@ Destruct is a small ECS "addon" for the construct library!
 #include <construct/construct.h>
 
 typedef unsigned int entity;
+typedef int (*system_function)(buffer*);
 
 /* Returns the number of entities in the given entity buffer */
 unsigned int get_num_entities(entity** entities);

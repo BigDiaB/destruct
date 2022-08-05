@@ -52,7 +52,7 @@ int remove_component(entity target, buffer component)
 
 entity create_entity(unsigned int** entities)
 {
-    unsigned int i, num, used, offset;
+    unsigned int i, num, used, offset = 0;
 
     if ((*entities) == NULL)
     {
@@ -63,17 +63,26 @@ entity create_entity(unsigned int** entities)
     (*entities)[0]++;
     if ((*entities)[0] == 0)
     {
-        puts("More than 2^32 entities! Internal buffer overflown!");
+        puts("More than 2^32 entities! Entity buffer overflown!");
         exit(EXIT_FAILURE);
     }
     (*entities) = realloc((*entities),(*entities)[0] * sizeof(entity));
 
-    offset = 0;
-
     do
     {
         used = 0;
-        num = pseudo_random_premutation((*entities)[0] + offset -1);
+
+
+        const unsigned int prime = 4294967291;
+        const unsigned int x = (*entities)[0] + offset -1;
+        if (x >= prime)
+            num = x;
+        else
+        {
+            unsigned int residue = ((unsigned long long) x * x) % prime;
+            num = (x <= prime / 2) ? residue : prime - residue;
+        }
+
         for (i = 0; i < (*entities)[0]; i++)
         {
             if ((*entities)[i] == num)
